@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.fch.buffetfood.dao.FoodDao">
+
+    <insert id="addFood" parameterType="Food" useGeneratedKeys="true" keyColumn="food_id" keyProperty="foodId">
+        INSERT
+        INTO food (food_name, food_img, food_cate, have_detail, food_detail,
+        food_note, food_price, food_weight, is_enable)
+        VALUES (#{foodName}, #{foodImg}, #{foodCate}, #{haveDetail},
+        <if test="haveDetail == 1">
+            #{foodDetail},
+        </if>
+        <if test="haveDetail == 0">
+            NULL,
+        </if>
+        #{foodNote}, #{foodPrice}, #{foodWeight}, #{isEnable})
+    </insert>
+    <!--        -->
+    <update id="updateFood" parameterType="Food" useGeneratedKeys="true" keyColumn="food_id" keyProperty="foodId">
+        UPDATE food
+        SET food_name = #{foodName},
+        food_img = #{foodImg},
+        food_cate = #{foodCate},
+        have_detail= #{haveDetail},
+        <if test="haveDetail == 1">
+            food_detail= #{foodDetail},
+        </if>
+        <if test="haveDetail == 0">
+            food_detail= NULL,
+        </if>
+        food_note= #{foodNote},
+        food_price= #{foodPrice},
+        food_weight= #{foodWeight},
+        is_enable= #{isEnable}
+        WHERE food_id = #{foodId}
+    </update>
+
+
+    <!--查询所有食物-->
+    <select id="queryAllFoods" resultType="Food">
+        SELECT food_id,
+               food_name,
+               food_img,
+               food_cate,
+               have_detail,
+               food_detail,
+               cate_name,
+               food_note,
+               food_price
+        FROM food
+                 JOIN cate
+                      ON food.food_cate = cate.cate_id
+        WHERE food.is_enable = 1 ORDER BY food_weight DESC
+    </select>
+
+
+    <select id="queryFoodById" parameterType="Food" resultType="Food">
+        SELECT food_id,
+               food_name,
+               have_detail,
+               food_detail,
+               food_price
+        FROM food
+        WHERE food.is_enable = 1
+          AND food_id = #{foodId}
+    </select>
+
+
+    <select id="queryFoodImgUrlById" parameterType="Food" resultType="Food">
+        SELECT food_id,
+               food_img
+        FROM food
+        WHERE food_id = #{foodId}
+    </select>
+
+    <select id="adminQueryFoodById" parameterType="Food" resultType="Food">
+        SELECT food_id,
+               food_name,
+               food_img,
+               food_cate,
+               have_detail,
+               food_detail,
+               food_note,
+               food_price,
+               food_weight,
+               is_enable
+        FROM food
+        WHERE food_id = #{foodId}
+    </select>
+
+    <select id="adminQueryAllFoods" resultType="Food">
+        SELECT food_id,
+               food_name,
+               food_img,
+               food_cate,
+               have_detail,
+               food_detail,
+               cate_name,
+               food_note,
+               food_price,
+               food_weight,
+               food.is_enable
+        FROM food
+                 JOIN cate
+                      ON food.food_cate = cate.cate_id
+    </select>
+
+    <insert id="addDetail" parameterType="Detail" useGeneratedKeys="true" keyColumn="detail_id" keyProperty="detailId">
+        INSERT
+        INTO detail (detail_name, detail_price, detail_type)
+        VALUES (#{detailName}, #{detailPrice}, #{detailType})
+    </insert>
+
+    <delete id="deleteDetail" parameterType="Detail">
+        DELETE
+        FROM detail
+        WHERE detail_id = #{detailId}
+    </delete>
+
+    <update id="updateDetail" parameterType="Detail" useGeneratedKeys="true" keyColumn="detail_id"
+            keyProperty="detailId">
+        UPDATE detail
+        SET detail_name  = #{detailName},
+            detail_price = #{detailPrice},
+            detail_type  = #{detailType}
+        WHERE detail_id = #{detailId}
+    </update>
+
+    <select id="queryAllDetail" resultType="Detail">
+        SELECT detail_id,
+               detail_name,
+               detail_price,
+               detail_type
+        FROM detail
+    </select>
+</mapper>
